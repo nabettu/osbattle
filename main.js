@@ -3,46 +3,22 @@ var osDataStore = milkcocoa.dataStore("userData");
 
 var userData = {
   data: [],
+  totalcount:0,
   osResult: {apple:0,android:0,windows:0,others:0},
   init: function(){
     //ユーザー一覧を読み込みdataに突っ込む
     osDataStore.stream().size(999).next(function(err,data){
 //      console.log(data);
       var cuttentUserExist = true;
+      userData.totalcount = data.length;
       for(var i=0; i<data.length; i++){
         userData.addUser(data[i].value);
       //userDataに今みてるユーザーが入ってないかチェックする
         if(data[i].value.ipAddress == ipAddress)cuttentUserExist = false;
       }
       if(cuttentUserExist)userData.addCurrentUser();
-      else userData.graphLoad();
+      else graphLoad();
     });
-  },
-  graphLoad: function(){
-    var doughnutData = [
-    　　{
-      //apple
-    　　　value: userData.osResult.apple,
-    　　　color:"#999999"
-    　　},
-    　　{
-      //android
-    　　　value: userData.osResult.android,
-    　　　color: "#a5c63b"
-    　　},
-    　　{
-      //windows
-    　　　value: userData.osResult.windows,
-    　　　color: "#00adef"
-    　　},
-       {
-      //others
-    　　　value: userData.osResult.others,
-    　　　color: "#fbaa6e"
-    　　}
-    ];
- 
-    var myDoughnut = new Chart($("#chart")[0].getContext("2d")).Doughnut(doughnutData);
   },
   addCurrentUser: function(){
     //milkcocoaへデータ送信
@@ -68,10 +44,48 @@ $(function(){
   //データ受信監視
   osDataStore.on("push",function(data){
     userData.addUser(data.value);
-    setTimeout("userData.graphLoad();",1000);
+    userData.totalcount++;
+    setTimeout("graphLoad();",1000);
   });
-
 });
+
+function graphLoad(){
+  var doughnutData = [
+  　　{
+    //apple
+  　　　value: userData.osResult.apple,
+  　　　color:"#999999"
+  　　},
+  　　{
+    //android
+  　　　value: userData.osResult.android,
+  　　　color: "#a5c63b"
+  　　},
+  　　{
+    //windows
+  　　　value: userData.osResult.windows,
+  　　　color: "#00adef"
+  　　},
+     {
+    //others
+  　　　value: userData.osResult.others,
+  　　　color: "#fbaa6e"
+  　　}
+  ];
+
+  var myDoughnut = new Chart($("#chart")[0].getContext("2d")).Doughnut(doughnutData);
+
+  var html ="Apple:<span id='countApple'></span>%<br>";
+  html+="Android:<span id='countAndroid'></span>%<br>";
+  html+="Windows:<span id='countWindows'></span>%<br>";
+  html+="Others:<span id='countOthers'></span>%<br>";
+  $("#counter").append(html);
+
+  var numAnim1 = new CountUp("countApple",0,parseInt(userData.osResult.apple/userData.totalcount*100),0,3).start();
+  var numAnim2 = new CountUp("countAndroid",0,parseInt(userData.osResult.android/userData.totalcount*100),0,3).start();
+  var numAnim3 = new CountUp("countWindows",0,parseInt(userData.osResult.windows/userData.totalcount*100),0,3).start();
+  var numAnim4 = new CountUp("countOthers",0,parseInt(userData.osResult.others/userData.totalcount*100),0,3).start();
+}
 
 function findOS(ua){
 //  console.log(ua);
