@@ -12,7 +12,7 @@ var userData = {
       for(var i=0; i<data.length; i++){
         userData.addUser(data[i].value);
       //userDataに今みてるユーザーが入ってないかチェックする
-        if(data[i].value.ipAddress = ipAddress)cuttentUserExist = false;
+        //if(data[i].value.ipAddress == ipAddress)cuttentUserExist = false;
       }
       if(cuttentUserExist)userData.addCurrentUser();
       else userData.graphLoad();
@@ -68,7 +68,7 @@ $(function(){
   //データ受信監視
   osDataStore.on("push",function(data){
     userData.addUser(data.value);
-    setTimeOut("userData.graphLoad()",1000);
+    setTimeout("userData.graphLoad();",1000);
   });
 
 });
