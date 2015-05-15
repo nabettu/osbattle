@@ -75,16 +75,12 @@ function graphLoad(){
 
   var myDoughnut = new Chart($("#chart")[0].getContext("2d")).Doughnut(doughnutData);
 
-  var html ="Apple:<span id='countApple'></span>%<br>";
-  html+="Android:<span id='countAndroid'></span>%<br>";
-  html+="Windows:<span id='countWindows'></span>%<br>";
-  html+="Others:<span id='countOthers'></span>%<br>";
-  $("#counter").append(html);
-
-  var numAnim1 = new CountUp("countApple",0,parseInt(userData.osResult.apple/userData.totalcount*100),0,3).start();
-  var numAnim2 = new CountUp("countAndroid",0,parseInt(userData.osResult.android/userData.totalcount*100),0,3).start();
-  var numAnim3 = new CountUp("countWindows",0,parseInt(userData.osResult.windows/userData.totalcount*100),0,3).start();
-  var numAnim4 = new CountUp("countOthers",0,parseInt(userData.osResult.others/userData.totalcount*100),0,3).start();
+//パーセンテージ表示
+  var numAnim = [];
+  $.each(userData.osResult,function(key,value){
+    $("#counter").append(key+":<span id='count"+key+"'></span>%<br>");
+    numAnim[key] = new CountUp("count"+key,0,parseInt(value/userData.totalcount*100),0,3).start();
+  });
 }
 
 function findOS(ua){
